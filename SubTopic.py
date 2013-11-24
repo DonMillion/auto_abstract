@@ -88,6 +88,7 @@ def merge(x,y):
 #生成最大生成树,kruskal算法
 def buildTree(SimList):
 	T = [] #初始化树边集为空集
+	TreeMatrix = [[0] * PreProcessor.SC for i in range(PreProcessor.SC)]
 	E = sorted(SimList,key=itemgetter('sim'),reverse=True)
 	global nodeRoot,SimSum
 	nodeRoot = [-1 for i in range(PreProcessor.SC)]
@@ -97,40 +98,37 @@ def buildTree(SimList):
 		if (merge(x,y)) == 1:
 			T.append(e)
 			SimSum += e['sim']
+			TreeMatrix[x][y] = e['sim']
 			count += 1
 			if count == PreProcessor.SC-1:
 				break
-	return T
+	return T,TreeMatrix
 
-# def devideTree(Tree,SimMat,sentences):
-# 	global SimSum
-# 	#计算平均相似度
-# 	avg = SimSum/(PreProcessor.SC * (PreProcessor.SC - 1) / 2)
-# 	#计算顶点(句子)重要度：与其相似度大于avg的顶点的数目和顶点的度
-# 	for node in range(PreProcessor.SC):
-# 		important,d = 0,0
+def devideTree(Tree,TreeMatrix,sentences):
+	global SimSum
+	#计算平均相似度
+	avg = SimSum/(PreProcessor.SC-1)
+	#遍历整个最大生成树集合计算顶点(句子)重要度：与其相似度大于avg的顶点的数目和顶点的度
+	for e in range(Tree):
+		x,y = e['xy']
+		if not hasattr(sentences[x],'d'):
+			sentences[x].imp = 0
+			sentences[x].d = 0
+		if not hasattr(sentences[y],'d'):
+			sentences[y].imp = 0
+			sentences[y].d = 0
 
-# 		#遍历矩阵右半行
-# 		for i in range(node+1,PreProcessor.SC):
-# 			if SimMat[node][i] > 0:
-# 				d += 1
-# 				if SimMat[node][i] > avg:
-# 					important += 1
 
-# 		#遍历矩阵上半列
-# 		for i in range(0,node):
-# 			if SimMat[i][node] > 0:
-# 				d += 1
-# 				if SimMat[i][node] > avg:
-# 					important += 1
-
-# 		sentences[node].imp = important
-# 		sentences[node].d = d
+		if e['sim'] > avg:
+			sentences[x].imp += 1
+			sentences[y].imp += 1
+		sentences[x].d += 1
+		sentences[y].d += 1
 
 # 	print(SimSum)
 # 	print(avg)
 # 	#按重要度优先，度次要排序顶点（句子）
-# 	sortedSentences = sorted(sentences,key=attrgetter('imp','d'),reverse = True)
+	sortedSentences = sorted(sentences,key=attrgetter('imp','d'),reverse = True)
 
 # 	#选择凝聚点
 # 	Kmeans = []
