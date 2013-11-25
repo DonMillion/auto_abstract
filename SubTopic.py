@@ -5,6 +5,17 @@ from ResultAnalyzer import Analyzer
 nodeRoot = []
 SimSum = 0
 
+class Topic:
+	def __init__(self,center):
+		self.center = center
+		self.atttach = [center]
+
+	#计算并返回新的凝聚点
+	def newCenter(self):
+		
+	def reInit(self):
+		
+
 #计算每个单词在所有句子中的出现频率
 def calculateFrequency(sentences):
 	DocFrequency = {}
@@ -131,10 +142,20 @@ def devideTree(Tree,TreeMatrix,sentences):
 	sortedSentences = sorted(sentences,key=attrgetter('imp','d'),reverse = True)
 
 # 	#选择凝聚点
-# 	Kmeans = []
-# 	for s in sortedSentences:
-		
-		
+	Knodes = []
+	for s in sortedSentences:
+		if s.imp > 0:
+			newNode = True
+			sIndex = sentences.index(s)
+			#从已选上的凝聚点中查看是否已有连通（相邻）
+			for K in Knodes:
+				KIndex = sentences.index(K)
+				if TreeMatrix[sIndex][KIndex] > 0 or TreeMatrix[KIndex][sIndex] > 0:
+					newNode = False
+					break
+			if newNode:
+				Knodes.append(s)
+	
 
 def main():
 	result = PreProcessor.process('预处理文档，同时去除停用的得得词哎呦。预处理文档。每次一个函数调用另外一个函数时，在下一次发生调用时，它自己的值和状态都会被挂起')
