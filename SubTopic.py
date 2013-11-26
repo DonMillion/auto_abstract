@@ -12,9 +12,10 @@ class Topic:
 
 	#计算并返回新的凝聚点
 	def newCenter(self):
-		
+		pass
+
 	def reInit(self):
-		
+		pass
 
 #计算每个单词在所有句子中的出现频率
 def calculateFrequency(sentences):
@@ -110,17 +111,40 @@ def buildTree(SimList):
 			T.append(e)
 			SimSum += e['sim']
 			TreeMatrix[x][y] = e['sim']
+			TreeMatrix[y][x] = e['sim']
 			count += 1
-			if count == PreProcessor.SC-1:
+			if count == PreProcessor.SC-1:	
 				break
 	return T,TreeMatrix
+
+# 寻找最相近的主题，即直接到达，且路径上的相似度之和最大
+def findClosestTopic(TreeMatrix,node,topiclist):
+	# 初始化，先把相邻的点加入候选集
+	candidate = [ { 'index':i, 'sim': TreeMatrix[node][i] } for i in range(PreProcessor.SC) if TreeMatrix[node][i] > 0]
+	end = [] #终端，即直接相连的topic的集合
+	travel = [ 0 for i in range(PreProcessor.SC)] #记录已经遍历过的点
+	travel[node] = 1
+
+	for search in candidate:
+		travel[search['index']] = 1
+		# 已经是topic的话，直接加入终端集合
+		if search['index'] in topiclist:
+			end.append(search)
+		# 否则，把其相邻的点加入候选，等待遍历
+		else:
+			for i in TreeMatrix[node] if travel[i] == 0 and TreeMatrix[node][i] > 0:
+				member = {'index':i, 'sim':search['sim']+TreeMatrix[node][i]}
+				candidate.append(member)
+
+	closest = max(end,key=itemgetter('sim'))
+	return closest['index']
 
 def devideTree(Tree,TreeMatrix,sentences):
 	global SimSum
 	#计算平均相似度
 	avg = SimSum/(PreProcessor.SC-1)
 	#遍历整个最大生成树集合计算顶点(句子)重要度：与其相似度大于avg的顶点的数目和顶点的度
-	for e in range(Tree):
+	for e in Tree:
 		x,y = e['xy']
 		if not hasattr(sentences[x],'d'):
 			sentences[x].imp = 0
@@ -129,33 +153,37 @@ def devideTree(Tree,TreeMatrix,sentences):
 			sentences[y].imp = 0
 			sentences[y].d = 0
 
-
 		if e['sim'] > avg:
 			sentences[x].imp += 1
 			sentences[y].imp += 1
 		sentences[x].d += 1
 		sentences[y].d += 1
 
-# 	print(SimSum)
-# 	print(avg)
-# 	#按重要度优先，度次要排序顶点（句子）
+	#按重要度优先，度次要排序顶点（句子）
 	sortedSentences = sorted(sentences,key=attrgetter('imp','d'),reverse = True)
 
-# 	#选择凝聚点
+	#选择凝聚点
 	Knodes = []
+	Kdict = {}
 	for s in sortedSentences:
 		if s.imp > 0:
 			newNode = True
 			sIndex = sentences.index(s)
 			#从已选上的凝聚点中查看是否已有连通（相邻）
 			for K in Knodes:
-				KIndex = sentences.index(K)
+				KIndex = sentences.index(K.center)
 				if TreeMatrix[sIndex][KIndex] > 0 or TreeMatrix[KIndex][sIndex] > 0:
 					newNode = False
 					break
 			if newNode:
-				Knodes.append(s)
+				Knodes.append(Topic(s))
+				Kdict[s] = None
 	
+	Klist = {sentences.index(s) for s in Kdict}
+	for s in sentences:
+		if s not in Klist:
+			pass
+
 
 def main():
 	result = PreProcessor.process('预处理文档，同时去除停用的得得词哎呦。预处理文档。每次一个函数调用另外一个函数时，在下一次发生调用时，它自己的值和状态都会被挂起')
@@ -165,7 +193,8 @@ def main():
 	for i in SimMat:
 		print(i)
 		print('\n')
-	print(buildTree(SimList))
+	Tree,TreeMatrix = (buildTree(SimList))
+	devideTree(Tree,TreeMatrix,result)
 
 if __name__ == '__main__':
 	main()
