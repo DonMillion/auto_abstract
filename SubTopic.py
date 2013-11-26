@@ -8,7 +8,7 @@ SimSum = 0
 class Topic:
 	def __init__(self,center):
 		self.center = center
-		self.atttach = [center]
+		self.attach = [center]
 
 	#计算并返回新的凝聚点
 	def newCenter(self):
@@ -163,7 +163,7 @@ def devideTree(Tree,TreeMatrix,sentences):
 	sortedSentences = sorted(sentences,key=attrgetter('imp','d'),reverse = True)
 
 	#选择凝聚点
-	Knodes = []
+	Knodes = [] # Topic类 的集合
 	Kdict = {}
 	for s in sortedSentences:
 		if s.imp > 0:
@@ -176,13 +176,17 @@ def devideTree(Tree,TreeMatrix,sentences):
 					newNode = False
 					break
 			if newNode:
-				Knodes.append(Topic(s))
-				Kdict[s] = None
+				newTopic = Topic(s)
+				Knodes.append(newTopic)
+				Kdict[s] = newTopic
 	
 	Klist = {sentences.index(s) for s in Kdict}
+	# 把其他点划分到凝聚点
 	for s in sentences:
-		if s not in Klist:
-			pass
+		if s not in Kdict:
+			TopCenterNum = findClosestTopic(TreeMatrix, sentences.index(s), Klist)
+			selectedTopic = Kdict[sentences[TopCenterNum]]
+			selectedTopic.attach.append(s)
 
 
 def main():
