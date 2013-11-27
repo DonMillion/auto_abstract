@@ -14,8 +14,14 @@ class Topic:
 	def newCenter(self):
 		pass
 
-	def reInit(self):
-		pass
+	def reInit(self, nC=None):
+		self.attach = []
+		if nC == None:
+			self.center = self.newCenter()
+		else:
+			self.center = nC
+		self.attach.append[self.center]
+			
 
 #计算每个单词在所有句子中的出现频率
 def calculateFrequency(sentences):
@@ -162,7 +168,7 @@ def devideTree(Tree,TreeMatrix,sentences):
 	#按重要度优先，度次要排序顶点（句子）
 	sortedSentences = sorted(sentences,key=attrgetter('imp','d'),reverse = True)
 
-	#选择凝聚点
+	#第一次选择凝聚点
 	Knodes = [] # Topic类 的集合
 	Kdict = {}
 	for s in sortedSentences:
@@ -180,13 +186,26 @@ def devideTree(Tree,TreeMatrix,sentences):
 				Knodes.append(newTopic)
 				Kdict[s] = newTopic
 	
-	Klist = {sentences.index(s) for s in Kdict}
-	# 把其他点划分到凝聚点
-	for s in sentences:
-		if s not in Kdict:
-			TopCenterNum = findClosestTopic(TreeMatrix, sentences.index(s), Klist)
-			selectedTopic = Kdict[sentences[TopCenterNum]]
-			selectedTopic.attach.append(s)
+	# 循环选择凝聚点
+	newKdict = {}
+	while newKdict != Kdict:
+		# 把其他点分到凝聚点
+		Klist = {sentences.index(s) for s in Kdict}
+		for s in sentences:
+			if s not in Kdict:
+				TopCenterNum = findClosestTopic(TreeMatrix, sentences.index(s), Klist)
+				selectedTopic = Kdict[sentences[TopCenterNum]]
+				selectedTopic.attach.append(s)
+		
+		# 重新计算聚类中心
+		newKdict.clear()
+		for Top in Knodes:
+			newCenter = Top.newCenter()
+			Top.reInit(newCenter)
+			newKdict[newCenter] = Top
+
+		newKdict, Kdict = Kdict, newKdict
+
 
 
 def main():
