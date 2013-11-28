@@ -34,7 +34,7 @@ def calculateWeight(sentences):
 #构建相似矩阵
 def buildSimilarMatrix(sentences):
 	"""初始化相似矩阵，所有元素置0"""
-	SimMat = [[-1] * PreProcessor.SC for i in range(PreProcessor.SC)]
+	SimMat = [[0] * PreProcessor.SC for i in range(PreProcessor.SC)]
 	SimList = []
 	for x in range(0,PreProcessor.SC):
 		for y in range(x+1,PreProcessor.SC):
@@ -59,6 +59,7 @@ def buildSimilarMatrix(sentences):
 					denominator = math.sqrt(xlength) * math.sqrt(ylength)
 					sim = numerator/denominator
 				SimMat[x][y] = sim
+				SimMat[y][x] = sim
 				SimList.append({'xy':(x,y),'sim':sim})
 
 			# else:#相同句子设为-1

@@ -25,6 +25,7 @@ class sentence:
 		self.source = content
 		temp = list(jieba.cut(content, cut_all=mode))
 		self.wordcount = 0
+		self.LexScore = 1
 		#去除停用词(包括标点符号)，同时计算每个词的出现次数
 		self.segements = {}
 		for word in temp:
