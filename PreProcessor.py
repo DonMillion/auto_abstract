@@ -7,8 +7,8 @@ from ResultAnalyzer import Analyzer
 stopwordFileLoc = 'stopwords.txt'
 SC = 0 #所有句子的总数(Sentence Count)
 
-#加载停用词表
 def loadStopwords():
+	"""加载停用词表"""
 	stopwordFile = open(stopwordFileLoc)
 	stopwords = {} #遍历字典时速度会快点
 	for word in stopwordFile.read().split('\n'):
@@ -36,19 +36,22 @@ class sentence:
 					self.segements[word]['TF'] += 1
 				self.wordcount += 1
 
-#"""预处理文档，同时去除停用词"""
 def process(document, mode = False):
+	"""预处理文档，同时去除停用词"""
 	#设置分段标识符号，句号、问号等
 	delimiters = r'[;.!?。？！；～\s]\s*'
 	sentences = re.split(delimiters, document)
 	result = []
+	index = 0
 	for s in sentences:
 		item = sentence(s)
 		if item.wordcount > 0:
+			item.index = index
 			result.append(item)
+			index += 1
 
 	global SC
-	SC = len(result)
+	SC = index-1
 	return result
 
 if __name__ == '__main__':
