@@ -15,3 +15,6 @@ class Topic:
 		else:
 			self.center = nC
 		self.attach.append[self.center]
+
+	def getAvgSim(SimMat):
+		

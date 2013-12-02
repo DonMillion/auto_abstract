@@ -1,4 +1,5 @@
-import jieba,re
+import re
+import jieba.posseg as posseg
 from ResultAnalyzer import Analyzer
 
 #用结巴（jieba）分词系统分词
@@ -22,20 +23,21 @@ STOPWORDS = loadStopwords()
 class sentence:
 	"""每个对象储存一个句子"""
 
-	def __init__(self, content, mode = False):
+	def __init__(self, content):
 		self.source = content
-		temp = list(jieba.cut(content, cut_all=mode))
+		temp = (posseg.cut(content))
 		self.wordcount = 0
 		self.LexScore = 1
 		#去除停用词(包括标点符号)，同时计算每个词的出现次数
 		self.segements = {}
-		for word in temp:
-			if word not in STOPWORDS:
-				if word not in self.segements:
-					self.segements[word] = {}
-					self.segements[word]['TF'] = 1
+		for w in temp:
+			if w.word not in STOPWORDS:
+				if w.word not in self.segements:
+					self.segements[w.word] = {}
+					self.segements[w.word]['TF'] = 1
+					self.segements[w.word]['flag'] = w.flag
 				else:
-					self.segements[word]['TF'] += 1
+					self.segements[w.word]['TF'] += 1
 				self.wordcount += 1
 
 def process(document, mode = False):
