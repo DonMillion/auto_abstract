@@ -6,8 +6,11 @@ from TopicClass import Topic
 # 计算句子之间的相似度，构建相似矩阵
 # 用K-means聚类，以划分出子主题
 
-nodeRoot = []
-SimSum = 0
+# 模块变量
+nodeRoot = [] # 构建最大生成树时记录遍历的节点
+SimSum = 0 
+SimMat = [] # 存放相似矩阵
+topicList = [] # 存放主题列表
 
 def calculateFrequency(sentences):
 	"""计算每个单词在所有句子中的出现频率"""
@@ -31,7 +34,6 @@ def calculateWeight(sentences):
 			sentence.segements[word]['weight'] = TF * IDF
 	return DocFrequency
 
-#构建相似矩阵
 def buildSimilarMatrix(sentences):
 	"""初始化相似矩阵，所有元素置0"""
 	SimMat = [[0] * PreProcessor.SC for i in range(PreProcessor.SC)]
@@ -197,17 +199,16 @@ def devideTree(Tree,TreeMatrix,sentences):
 		newKdict, Kdict = Kdict, newKdict
 	return Knodes
 
+def buildTopic(sentences):
+	"""构造主题"""
 
-def main():
-	result = PreProcessor.process('预处理文档，同时去除停用的得得词哎呦。预处理文档。每次一个函数调用另外一个函数时，在下一次发生调用时，它自己的值和状态都会被挂起')
-	doc = calculateWeight(result)
-	SimMat,SimList = buildSimilarMatrix(result)
-	print('\n')
-	for i in SimMat:
-		print(i)
-		print('\n')
-	Tree,TreeMatrix = (buildTree(SimList))
-	devideTree(Tree,TreeMatrix,result)
-
-if __name__ == '__main__':
-	main()
+	global SimMat, topicList
+	# 计算词语权重
+	calculateWeight(sentences)
+	# 构建相似矩阵
+	SimMat, SimList = buildSimilarMatrix(sentences)
+	# 构建最大生成树
+	Tree, TreeMatrix = buildTree(SimList)
+	# 划分最大生成树,生成子主题
+	topicList = devideTree(Tree, TreeMatrix, sentences)
+	return topicList

@@ -148,7 +148,7 @@ def calculateFeatureScore(sentences):
 		c = 0.15
 		s.FeatureScore = a*s.wp+b*s.wc+c*s.wt+d*s.ws
 
-def calculSentenceWeight(sentences, topicList, SimMat):
+def buildSentenceWeight(sentences, topicList, SimMat):
 	""" 计算所有句子的权重 """
 	
 	# 先计算LexScore和FeatureScore
