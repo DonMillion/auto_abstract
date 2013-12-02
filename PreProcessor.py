@@ -25,7 +25,7 @@ class sentence:
 
 	def __init__(self, content):
 		self.source = content
-		temp = (posseg.cut(content))
+		temp = posseg.cut(content)
 		self.wordcount = 0
 		self.LexScore = 1
 		#去除停用词(包括标点符号)，同时计算每个词的出现次数

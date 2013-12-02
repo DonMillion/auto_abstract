@@ -36,6 +36,14 @@ def LexRank(sentenceList, SimMat):
 		if enough:
 			break
 
+def calculateLexScore(topicList, SimMat):
+	"""计算所有句子的LexScore"""
+
+	for t in topicList:
+		LexRank(t, SimMat) # 用LexRank算法
+		t.getAvgSim(SimMat) # 同时主题内计算矩阵平均值
+
+
 def getPSS(document=PreProcessor.fullDoc):
 	"""getParagraphSpecialSentences
 		获取所有段落的第一,二个句子,最后一个句子,标题
@@ -140,5 +148,16 @@ def calculateFeatureScore(sentences):
 		c = 0.15
 		s.FeatureScore = a*s.wp+b*s.wc+c*s.wt+d*s.ws
 
-def calculSentenceWeight(sentences):
+def calculSentenceWeight(sentences, topicList, SimMat):
 	""" 计算所有句子的权重 """
+	
+	# 先计算LexScore和FeatureScore
+	calculateLexScore(topicList, SimMat)
+	calculateFeatureScore(sentences)
+
+	for s in sentences:
+		# 过短的句子意义不大，舍弃之
+		if s.wordcount <= 6:
+			s.weight = 0
+		else:
+			s.weight = s.LexScore+s.FeatureScore*s.belong.SimMatAvg

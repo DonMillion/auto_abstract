@@ -158,7 +158,7 @@ def devideTree(Tree,TreeMatrix,sentences):
 
 	#第一次选择凝聚点
 	Knodes = [] # Topic类 的集合
-	Kdict = {}
+	Kdict = {} # Kdict和newKdict为记录{句子:子主题}映射的字典
 	for s in sortedSentences:
 		if s.imp > 0:
 			newNode = True
@@ -184,6 +184,7 @@ def devideTree(Tree,TreeMatrix,sentences):
 				TopCenterNum = findClosestTopic(TreeMatrix, s.index, Klist)
 				selectedTopic = Kdict[sentences[TopCenterNum]]
 				selectedTopic.attach.append(s)
+				s.belong = selectedTopic # belong 用于记录句子属于哪个子主题
 		
 		# 重新计算聚类中心
 		newKdict.clear()
@@ -191,6 +192,7 @@ def devideTree(Tree,TreeMatrix,sentences):
 			newCenter = Top.newCenter()
 			Top.reInit(newCenter)
 			newKdict[newCenter] = Top
+			newCenter.belong = Top
 
 		newKdict, Kdict = Kdict, newKdict
 	return Knodes
