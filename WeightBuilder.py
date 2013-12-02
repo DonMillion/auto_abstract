@@ -1,4 +1,4 @@
-import PreProcessor
+import PreProcessor,re
 from TopicClass import Topic
 
 def LexRank(sentenceList, SimMat):
@@ -8,7 +8,6 @@ def LexRank(sentenceList, SimMat):
 	N = len(sentenceList)
 	d = 0.15 # 阻尼系数，介于[0.1,0.2]之间
 	Threshold = None # 变化程度阈值
-	enough = True
 
 	while True:
 		enough = True
@@ -33,4 +32,38 @@ def LexRank(sentenceList, SimMat):
 
 		if enough:
 			break
+
+def getPSS(document=PreProcessor.fullDoc):
+	"""getParagraphSpecialSentences
+		获取所有段落的第一,二个句子,最后一个句子,标题
+		@return set
+	"""
+
+	firSen = {}
+	secSen = {}
+	lastSen = {}
+	title = {}
+
+	paragraphs = document.splitlines()
+	delimiters = r'[;.!?。？！；～\s]\s*'
+	i = 0
+	for paragraph in paragraphs:
+		sentences = re.split(delimiters, paragraph)
+		count = len(sentences)
+
+		# 如果这个段落只有一个句子，说明是个标题
+		if count == 1:
+			title[sentences[0]] = i
+
+		# 如果有两个或以上的句子，说明是个正常段落
+		else:
+			firSen[sentences[0]] = i
+			secSen[sentences[1]] = i
+			lastSen[sentences[count-1]] = i
+		i += 1
 		
+	return firSen, secSen, lastSen, title
+
+def getCharacter():
+	"""计算句子特征
+	"""

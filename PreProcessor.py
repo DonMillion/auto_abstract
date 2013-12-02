@@ -6,6 +6,7 @@ from ResultAnalyzer import Analyzer
 
 stopwordFileLoc = 'stopwords.txt'
 SC = 0 #所有句子的总数(Sentence Count)
+fullDoc = ''
 
 def loadStopwords():
 	"""加载停用词表"""
@@ -40,6 +41,8 @@ class sentence:
 def process(document, mode = False):
 	"""预处理文档，同时去除停用词"""
 	#设置分段标识符号，句号、问号等
+	global fullDoc
+	fullDoc = document
 	delimiters = r'[;.!?。？！；～\s]\s*'
 	sentences = re.split(delimiters, document)
 	result = []
