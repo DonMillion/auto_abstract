@@ -31,4 +31,10 @@ class Topic:
 		self.SimMatAvg = avg
 		return avg
 
+	def updateSentenScore(self, SimMat):
+		"""更新主题中每个句子的权重"""
 
+		for sent in attach:
+			attachSim = [SimMat[sent.index][i.index] for i in attach]
+			maxSim = max(attachSim)
+			sent.score = sent.score*(1-maxSim)

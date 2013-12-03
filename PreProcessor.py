@@ -40,7 +40,7 @@ class sentence:
 					self.segements[w.word]['TF'] += 1
 				self.wordcount += 1
 
-def process(document, mode = False):
+def process(document):
 	"""预处理文档，同时去除停用词"""
 	#设置分段标识符号，句号、问号等
 	global fullDoc
@@ -56,8 +56,9 @@ def process(document, mode = False):
 			result.append(item)
 			index += 1
 
-	global SC
+	global SC, sentences
 	SC = index-1
+	sentences = result
 	return result
 
 if __name__ == '__main__':

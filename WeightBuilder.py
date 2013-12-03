@@ -3,6 +3,7 @@ import jieba.posseg as posseg
 from TopicClass import Topic
 
 cuewordFileLoc = "cuewords.txt"
+firSent = []
 
 def LexRank(sentenceList, SimMat):
 	"""在每个子主题内用LexRank算法计算每个句子的显著度"""
@@ -101,12 +102,13 @@ def loadCueword():
 def calculateFeatureScore(sentences):
 	"""计算所有句子特征"""
 
-	firSen, secSen, lastSen, titles = getPSS()
+	global firSent
+	firSent, secSen, lastSen, titles = getPSS()
 	titleWord = loadTitleword(titles)
 
 	for s in sentences:
 		# 先判断是否为段首句，第二句，或者最后一句
-		if s.source in firSen:
+		if s.source in firSent:
 			s.wp = 1
 		elif s.source in secSen or s.source in lastSen:
 			s.wp = 0.5

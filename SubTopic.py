@@ -156,7 +156,7 @@ def devideTree(Tree,TreeMatrix,sentences):
 		sentences[y].d += 1
 
 	#按重要度优先，度次要排序顶点（句子）
-	sortedSentences = sorted(sentences,key=attrgetter('imp','d'),reverse = True)
+	sortedSentences = sorted(sentences, key=attrgetter('imp','d'), reverse=True)
 
 	#第一次选择凝聚点
 	Knodes = [] # Topic类 的集合
