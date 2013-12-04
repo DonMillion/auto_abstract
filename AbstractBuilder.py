@@ -34,6 +34,7 @@ def fetchSentence(topicList, SimMat):
 			if topicList[i].attach[0] in WeghtBuilder.firSent:
 				s = topicList[i].attach.pop()
 				finalAbstract.append(s)
+				count += 1
 
 		elif len(topicList[i].attach) >= 2:
 			# 剩下的句子大于或等于2个
@@ -44,6 +45,7 @@ def fetchSentence(topicList, SimMat):
 			# 重新计算主题内句子的权重并排序
 			topicList[i].updateSentenScore(SimMat)
 			topicList[i].sort(key=attrgetter('weight'), reverse=True)
+			count += 1
 
 		i += 1
 	return finalAbstract

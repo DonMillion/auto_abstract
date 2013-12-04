@@ -117,8 +117,8 @@ def calculateFeatureScore(sentences):
 
 		# 检查线索词
 		hasCUE = False
-		for word in s.segements:
-			if word in CUEWORDS:
+		for word in CUEWORDS: # 这样遍历会快点
+			if word in s.source:
 				hasCUE = True
 				break
 		s.wc = 1 if hasCUE else 0
