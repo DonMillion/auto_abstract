@@ -8,18 +8,21 @@ firSent = []
 def LexRank(sentenceList, SimMat):
 	"""在每个子主题内用LexRank算法计算每个句子的显著度"""
 	
-	indexList = {s.index for s in sentenceList}
-	N = len(sentenceList)
-	d = 0.15 # 阻尼系数，介于[0.1,0.2]之间
-	Threshold = None # 变化程度阈值
+	indexList = {s.index for s in sentenceList.attach}
+	N = len(sentenceList.attach)
+	d = 0.1 # 阻尼系数，介于[0.1,0.2]之间
+	Threshold = 0.002 # 变化程度阈值
 
+	i = 0
+	print('center:%s' % sentenceList.center)
 	while True:
+
 		enough = True
-		for u in sentenceList:
+		for u in sentenceList.attach:
 			firstWeight = 0
 
 			# 句子的显著度由其相邻节点的显著度决定
-			for v in sentenceList:
+			for v in sentenceList.attach:
 				if SimMat[u.index][v.index] > 0:
 					secondWeight = 0
 
@@ -27,13 +30,14 @@ def LexRank(sentenceList, SimMat):
 					for z in indexList:
 						if SimMat[v.index][z] > 0:
 							secondWeight += SimMat[v.index][z]
-					firstWeight += SimMat[u.index][v.index]/firstWeight*v.LexScore
+					firstWeight += SimMat[u.index][v.index]/secondWeight*v.LexScore
 
 			newLexScore = d/N + (1-d)*firstWeight
 			if abs(newLexScore-u.LexScore) > Threshold:
 				enough = False
+			print('change:%.5f' % abs(newLexScore-u.LexScore), end=' ')
 			u.LexScore = newLexScore
-
+		print()
 		if enough:
 			break
 
@@ -90,14 +94,14 @@ def loadTitleword(titles):
 def loadCueword():
 	"""加载线索词字典"""
 
-	cuewordFile = open(cuewordFileLoc)
+	cuewordFile = open(cuewordFileLoc, mode='r', encoding='utf8')
 	cuewords = {} #遍历字典时速度会快点
 	for word in cuewordFile.read().split('\n'):
 		cuewords[word] = None
 	cuewordFile.close()
 	return cuewords
 
-# CUEWORDS = loadCueword()
+CUEWORDS = loadCueword()
 
 def calculateFeatureScore(sentences):
 	"""计算所有句子特征"""
@@ -132,13 +136,16 @@ def calculateFeatureScore(sentences):
 		s.wt = 1 if hasTitle else 0
 
 		# 检查句子是否陈述句且含有名词
-		startIndex = PreProcessor.fullDoc.find(s.source)
-		endSymble = PreProcessor.fullDoc[startIndex+len(s.source)] # 这个句子的结束符号
+		symbleIndex = PreProcessor.fullDoc.find(s.source)+len(s.source)
+		if symbleIndex < PreProcessor.fullDocLen:
+			endSymble = PreProcessor.fullDoc[symbleIndex] # 这个句子的结束符号
+		else:
+			endSymble = '。'
 		# 如果是陈述句
 		hasNoun = False
 		if endSymble in '.;。；':
 			for word in s.segements:
-				if s.segements[word][flag] == 'n':
+				if s.segements[word]['flag'] == 'n':
 					hasNoun = True
 					break
 		s.ws = 1 if hasNoun else 0
@@ -147,7 +154,7 @@ def calculateFeatureScore(sentences):
 		a = 0.5
 		b = 0.2
 		c = 0.15
-		c = 0.15
+		d = 0.15
 		s.FeatureScore = a*s.wp+b*s.wc+c*s.wt+d*s.ws
 
 def buildSentenceWeight(sentences, topicList, SimMat):

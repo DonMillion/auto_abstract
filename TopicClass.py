@@ -41,6 +41,10 @@ class Topic:
 	def getAvgSim(self, SimMat):
 		"""计算整个子主题内所有句子之间的相似度矩阵的平均值"""
 
+		if len(self.attach) == 1:
+			self.SimMatAvg = 0
+			return 0
+
 		simSum = 0
 		length = len(self.attach)
 		for i in range(length):
@@ -56,7 +60,7 @@ class Topic:
 	def updateSentenScore(self, SimMat):
 		"""更新主题中每个句子的权重"""
 
-		for sent in attach:
-			attachSim = [SimMat[sent.index][i.index] for i in attach]
+		for sent in self.attach:
+			attachSim = [SimMat[sent.index][i.index] for i in self.attach]
 			maxSim = max(attachSim)
-			sent.score = sent.score*(1-maxSim)
+			sent.weight = sent.weight*(1-maxSim)

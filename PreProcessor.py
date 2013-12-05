@@ -9,6 +9,7 @@ from ResultAnalyzer import Analyzer
 stopwordFileLoc = 'stopwords.txt'
 SC = 0 #所有句子的总数(Sentence Count)
 fullDoc = ''
+fullDocLen = 0
 sentences = []
 
 def loadStopwords():
@@ -25,7 +26,7 @@ STOPWORDS = loadStopwords()
 class sentence:
 	"""每个对象储存一个句子"""
 
-	__slots__ = ['source', 'belong', 'wordcount', 'LexScore', 'imp', 'd', 'FetureScore', 'segements', 'index', 'weight']
+	__slots__ = ['source', 'belong', 'wordcount', 'LexScore', 'imp', 'd', 'FeatureScore', 'segements', 'index', 'weight', 'wp', 'ws', 'wt', 'wc']
 
 	def __init__(self, content):
 		self.source = content
@@ -52,8 +53,9 @@ class sentence:
 def process(document):
 	"""预处理文档，同时去除停用词"""
 	#设置分段标识符号，句号、问号等
-	global fullDoc
+	global fullDoc, fullDocLen
 	fullDoc = document
+	fullDocLen = len(document)
 	delimiters = r'[;.!?。？！；～\s]\s*'
 	sent = re.split(delimiters, document)
 	result = []

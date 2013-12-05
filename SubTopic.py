@@ -125,14 +125,10 @@ def findClosestTopic(TreeMatrix,node,topiclist):
 		# 否则，把其相邻的点加入候选，等待遍历
 		else:
 			for i in range(PreProcessor.SC):
-				# print('node,i,search.index:%s,%s,%s' % (node,i,search['index']))
-				# print(candidate)
-				# print(travel)
 				if travel[i] == 0 and TreeMatrix[search['index']][i] > -1:
 					member = {'index':i, 'sim':search['sim']+TreeMatrix[search['index']][i]}
 					candidate.append(member)
 
-	# print('end: %s' % end)
 	closest = max(end,key=itemgetter('sim'))
 	return closest['index']
 
@@ -175,7 +171,9 @@ def devideTree(Tree,TreeMatrix,sentences):
 	
 	# 循环选择凝聚点
 	newKdict = {}
+	circleTime = 0
 	while True:
+		circleTime += 1
 		# 把其他点分到凝聚点
 		Klist = {s.index for s in Kdict}
 
@@ -193,7 +191,7 @@ def devideTree(Tree,TreeMatrix,sentences):
 			newKdict[newCenter] = Top
 
 		# 凝聚点不变，结束
-		if newKdict == Kdict:
+		if newKdict == Kdict or circleTime == 20:
 			break
 		# 否则，重新初始化topic
 		else:
