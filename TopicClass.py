@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # 主题类，用以表示K-means中的一个主题
 from operator import attrgetter
 
@@ -9,6 +10,8 @@ class Topic:
 	def newCenter(self, TreeMatrix):
 		"""计算并返回新的凝聚点"""
 
+		if len(self.attach) == 1:
+			return self.center
 		avg = self.getAvgSim(TreeMatrix)
 
 		# 在主题内计算重要度和度
@@ -21,7 +24,7 @@ class Topic:
 						sent.imp += 1
 					sent.d += 1
 
-		result = max(self.attach, key=attrgetter('imp', 'd'), reverse=True)
+		result = max(self.attach, key=attrgetter('imp', 'd'))
 		return result
 
 
@@ -33,7 +36,7 @@ class Topic:
 			self.center = self.newCenter()
 		else:
 			self.center = nC
-		self.attach.append[self.center]
+		self.attach.append(self.center)
 
 	def getAvgSim(self, SimMat):
 		"""计算整个子主题内所有句子之间的相似度矩阵的平均值"""

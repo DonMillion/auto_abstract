@@ -1,4 +1,5 @@
-import PreProcessor, math, WeghtBuilder
+# -*- coding: utf-8 -*-
+import PreProcessor, math, WeightBuilder
 from operator import attrgetter,itemgetter
 
 # 文摘抽取模块

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re
 import jieba.posseg as posseg
 from ResultAnalyzer import Analyzer
@@ -8,10 +9,11 @@ from ResultAnalyzer import Analyzer
 stopwordFileLoc = 'stopwords.txt'
 SC = 0 #所有句子的总数(Sentence Count)
 fullDoc = ''
+sentences = []
 
 def loadStopwords():
 	"""加载停用词表"""
-	stopwordFile = open(stopwordFileLoc)
+	stopwordFile = open(stopwordFileLoc, mode='r', encoding='utf8')
 	stopwords = {} #遍历字典时速度会快点
 	for word in stopwordFile.read().split('\n'):
 		stopwords[word] = None
@@ -23,11 +25,15 @@ STOPWORDS = loadStopwords()
 class sentence:
 	"""每个对象储存一个句子"""
 
+	__slots__ = ['source', 'belong', 'wordcount', 'LexScore', 'imp', 'd', 'FetureScore', 'segements', 'index', 'weight']
+
 	def __init__(self, content):
 		self.source = content
 		temp = posseg.cut(content)
 		self.wordcount = 0
 		self.LexScore = 1
+		self.imp = 0
+		self.d = 0
 		#去除停用词(包括标点符号)，同时计算每个词的出现次数
 		self.segements = {}
 		for w in temp:
@@ -40,16 +46,19 @@ class sentence:
 					self.segements[w.word]['TF'] += 1
 				self.wordcount += 1
 
+	def __repr__(self):
+		return 'sentence({})'.format(self.source)
+
 def process(document):
 	"""预处理文档，同时去除停用词"""
 	#设置分段标识符号，句号、问号等
 	global fullDoc
 	fullDoc = document
 	delimiters = r'[;.!?。？！；～\s]\s*'
-	sentences = re.split(delimiters, document)
+	sent = re.split(delimiters, document)
 	result = []
 	index = 0
-	for s in sentences:
+	for s in sent:
 		item = sentence(s)
 		if item.wordcount > 0:
 			item.index = index
@@ -57,7 +66,7 @@ def process(document):
 			index += 1
 
 	global SC, sentences
-	SC = index-1
+	SC = index
 	sentences = result
 	return result
 

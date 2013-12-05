@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import PreProcessor,math
 from operator import itemgetter,attrgetter
 from TopicClass import Topic
@@ -49,7 +50,6 @@ def buildSimilarMatrix(sentences):
 				if len(intersection) == 0:
 					sim = 0
 				else:
-					print('x:%s, y:%s, inter:%s' % (x,y,intersection))
 					numerator = 0
 					for word in intersection:
 						numerator += xSege[word]['weight'] * ySege[word]['weight']
@@ -64,9 +64,6 @@ def buildSimilarMatrix(sentences):
 				SimMat[y][x] = sim
 				SimList.append({'xy':(x,y),'sim':sim})
 
-			# else:#相同句子设为-1
-			# 	SimMat[x][y] = -1
-			# 	SimList.append({'xy':(x,y),'sim':-1})
 	return SimMat,SimList
 
 def findRoot(n):
@@ -95,7 +92,7 @@ def merge(x,y):
 def buildTree(SimList):
 	"""生成最大生成树,kruskal算法"""
 	T = [] #初始化树边集为空集
-	TreeMatrix = [[0] * PreProcessor.SC for i in range(PreProcessor.SC)]
+	TreeMatrix = [[-1] * PreProcessor.SC for i in range(PreProcessor.SC)]
 	E = sorted(SimList,key=itemgetter('sim'),reverse=True)
 	global nodeRoot,SimSum
 	nodeRoot = [-1 for i in range(PreProcessor.SC)]
@@ -115,7 +112,7 @@ def buildTree(SimList):
 def findClosestTopic(TreeMatrix,node,topiclist):
 	"""寻找最相近的主题，即直接到达，且路径上的相似度之和最大"""
 	# 初始化，先把相邻的点加入候选集
-	candidate = [ { 'index':i, 'sim': TreeMatrix[node][i] } for i in range(PreProcessor.SC) if TreeMatrix[node][i] > 0]
+	candidate = [ { 'index':i, 'sim': TreeMatrix[node][i] } for i in range(PreProcessor.SC) if TreeMatrix[node][i] > -1]
 	end = [] #终端，即直接相连的topic的集合
 	travel = [ 0 for i in range(PreProcessor.SC)] #记录已经遍历过的点
 	travel[node] = 1
@@ -127,10 +124,15 @@ def findClosestTopic(TreeMatrix,node,topiclist):
 			end.append(search)
 		# 否则，把其相邻的点加入候选，等待遍历
 		else:
-			for i in TreeMatrix[node] if travel[i] == 0 and TreeMatrix[node][i] > 0:
-				member = {'index':i, 'sim':search['sim']+TreeMatrix[node][i]}
-				candidate.append(member)
+			for i in range(PreProcessor.SC):
+				# print('node,i,search.index:%s,%s,%s' % (node,i,search['index']))
+				# print(candidate)
+				# print(travel)
+				if travel[i] == 0 and TreeMatrix[search['index']][i] > -1:
+					member = {'index':i, 'sim':search['sim']+TreeMatrix[search['index']][i]}
+					candidate.append(member)
 
+	# print('end: %s' % end)
 	closest = max(end,key=itemgetter('sim'))
 	return closest['index']
 
@@ -142,12 +144,6 @@ def devideTree(Tree,TreeMatrix,sentences):
 	#遍历整个最大生成树集合计算顶点(句子)重要度：与其相似度大于avg的顶点的数目和顶点的度
 	for e in Tree:
 		x,y = e['xy']
-		if not hasattr(sentences[x],'d'):
-			sentences[x].imp = 0
-			sentences[x].d = 0
-		if not hasattr(sentences[y],'d'):
-			sentences[y].imp = 0
-			sentences[y].d = 0
 
 		if e['sim'] > avg:
 			sentences[x].imp += 1
@@ -175,28 +171,35 @@ def devideTree(Tree,TreeMatrix,sentences):
 				newTopic = Topic(s)
 				Knodes.append(newTopic)
 				Kdict[s] = newTopic
+				s.belong = newTopic
 	
 	# 循环选择凝聚点
 	newKdict = {}
-	while newKdict != Kdict:
+	while True:
 		# 把其他点分到凝聚点
 		Klist = {s.index for s in Kdict}
+
 		for s in sentences:
 			if s not in Kdict:
 				TopCenterNum = findClosestTopic(TreeMatrix, s.index, Klist)
 				selectedTopic = Kdict[sentences[TopCenterNum]]
 				selectedTopic.attach.append(s)
 				s.belong = selectedTopic # belong 用于记录句子属于哪个子主题
-		
+
 		# 重新计算聚类中心
 		newKdict.clear()
 		for Top in Knodes:
-			newCenter = Top.newCenter()
-			Top.reInit(newCenter)
+			newCenter = Top.newCenter(TreeMatrix)
 			newKdict[newCenter] = Top
-			newCenter.belong = Top
 
-		newKdict, Kdict = Kdict, newKdict
+		# 凝聚点不变，结束
+		if newKdict == Kdict:
+			break
+		# 否则，重新初始化topic
+		else:
+			for center in newKdict:
+				center.belong.reInit(center)
+			newKdict, Kdict = Kdict, newKdict
 	return Knodes
 
 def buildTopic(sentences):
