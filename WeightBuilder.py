@@ -14,7 +14,6 @@ def LexRank(sentenceList, SimMat):
 	Threshold = 0.002 # 变化程度阈值
 
 	i = 0
-	print('center:%s' % sentenceList.center)
 	while True:
 
 		enough = True
@@ -35,9 +34,7 @@ def LexRank(sentenceList, SimMat):
 			newLexScore = d/N + (1-d)*firstWeight
 			if abs(newLexScore-u.LexScore) > Threshold:
 				enough = False
-			print('change:%.5f' % abs(newLexScore-u.LexScore), end=' ')
 			u.LexScore = newLexScore
-		print()
 		if enough:
 			break
 
