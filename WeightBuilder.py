@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import PreProcessor,re
 import jieba.posseg as posseg
 from TopicClass import Topic

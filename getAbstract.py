@@ -1,7 +1,22 @@
 import TopicClass, PreProcessor, SubTopic, AbstractBuilder, WeightBuilder
 from operator import attrgetter
 
+def init():
+	SubTopic.SimSum = 0
+
+def setPercent(percent):
+	AbstractBuilder.fetchPercent = percent
+
+def getPercent():
+	return AbstractBuilder.fetchPercent
+
+def getDocSC():
+	return PreProcessor.SC
+
+
 def fetch(document):
+	init()
+
 	sentences = PreProcessor.process(document)
 
 	topicList = SubTopic.buildTopic(sentences)
@@ -12,7 +27,9 @@ def fetch(document):
 
 	abstract.sort(key=attrgetter('index'))
 
-	return abstract
+	sentList = [sent.source for sent in abstract]
+	result = '。\n'.join(sentList) + '。'
+	return result
 
 def main():
 	fileLoc = 'example.txt'
@@ -21,9 +38,7 @@ def main():
 	docfile.close()
 
 	abstract = fetch(content)
-
-	for ab in abstract:
-		print(ab.source)
+	print(abstract)
 
 if __name__ == '__main__':
 	main()
