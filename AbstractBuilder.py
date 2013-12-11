@@ -6,6 +6,7 @@ from operator import attrgetter,itemgetter
 
 # 文摘抽取率
 fetchPercent = 0.2
+N = 0
 
 def fetchSentence(topicList, SimMat):
 	"""从主题中抽取文摘"""
@@ -22,6 +23,7 @@ def fetchSentence(topicList, SimMat):
 	# 初始化
 	finalAbstract = [] # 最终文摘
 	topicList.sort(key=attrgetter('score'), reverse=True)
+	global N
 	N = math.ceil(PreProcessor.SC*fetchPercent) # 抽取的句子数
 	i = 0
 	count = 0 # 已抽取的文摘句子数

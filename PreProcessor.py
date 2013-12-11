@@ -56,7 +56,7 @@ def process(document):
 	global fullDoc, fullDocLen
 	fullDoc = document
 	fullDocLen = len(document)
-	delimiters = r'[;.!?。？！；～\s]\s*'
+	delimiters = r'[;!?。？！；～\s]\s*'
 	sent = re.split(delimiters, document)
 	result = []
 	index = 0
@@ -71,10 +71,3 @@ def process(document):
 	SC = index
 	sentences = result
 	return result
-
-if __name__ == '__main__':
-	result = process('预处理文档，同时去除停用的得得词哎呦。正如您可以看到的一样。每次一个函数调用另外一个函数时，在下一次发生调用时，它自己的值和状态都会被挂起')
-	for s in result:
-		print (s.segements)
-	print('\n')
-	print('SC= %s' %  SC)
