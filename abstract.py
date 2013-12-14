@@ -10,6 +10,8 @@ def openFile():
 	"""从文件读取内容"""
 	filetype = [('txt', '*.txt')] # 目前只支持txt文件
 	filename = filedialog.askopenfilename(filetypes=filetype)
+	if filename:
+		return 0
 	try:
 		# Windows 的txt文件默认中文编码是gbk
 		handle = open(filename, mode='r')
@@ -36,19 +38,19 @@ def transform(*args):
 	try:
 		getAbstract.setPercent((percent.get()))
 		p= percent.get()
-		if p < 0 or p > 1:
+		if p <= 0 or p >= 1:
 			raise Exception()
+		# 调用
+		text = docText.get('1.0', 'end')
+		abstractText.delete('1.0', 'end')
+		abstract = getAbstract.fetch(text)
+		# 显示
+		abstractText.insert('1.0', abstract)
+		docSC.set('原文句子数：{}'.format(getAbstract.getDocSC()))
+		abstractSC.set('文摘句子数：{}'.format(getAbstract.getN()))
 	except Exception:
 		messagebox.showinfo(message='请输入0-1之间的小数')
 
-	# 调用
-	text = docText.get('1.0', 'end')
-	abstractText.delete('1.0', 'end')
-	abstract = getAbstract.fetch(text)
-	# 显示
-	abstractText.insert('1.0', abstract)
-	docSC.set('原文句子数：{}'.format(getAbstract.getDocSC()))
-	abstractSC.set('文摘句子数：{}'.format(getAbstract.getN()))
 
 
 def clip(*args):
