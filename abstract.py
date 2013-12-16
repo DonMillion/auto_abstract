@@ -10,7 +10,7 @@ def openFile():
 	"""从文件读取内容"""
 	filetype = [('txt', '*.txt')] # 目前只支持txt文件
 	filename = filedialog.askopenfilename(filetypes=filetype)
-	if filename:
+	if not filename:
 		return 0
 	try:
 		# Windows 的txt文件默认中文编码是gbk
@@ -23,7 +23,6 @@ def openFile():
 			content = handle.read()
 		except Exception as err:
 			messagebox.showinfo(message=str(err))
-
 	handle.close()
 	docText.delete('1.0', 'end')
 	docText.insert('1.0', content)	
