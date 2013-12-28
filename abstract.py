@@ -45,8 +45,8 @@ def transform(*args):
 		abstract = getAbstract.fetch(text)
 		# 显示
 		abstractText.insert('1.0', abstract)
-		docSC.set('原文句子数：{}'.format(getAbstract.getDocSC()))
-		abstractSC.set('文摘句子数：{}'.format(getAbstract.getN()))
+		docSC.set(getAbstract.getDocSC())
+		abstractSC.set(getAbstract.getN())
 	except Exception:
 		messagebox.showinfo(message='请输入0-1之间的小数')
 
@@ -70,11 +70,11 @@ menu_file.add_command(label='Open...', command=openFile)
 menu_file.add_command(label='Exit', command=exitProgram)
 
 # frame
-mainframe = ttk.Frame(root, padding='5 5')
+mainframe = ttk.Frame(root, padding='5 5', relief='sunken')
 
 # 显示文档的text widget
-docText = Text(mainframe, width=60, height=20)
-abstractText = Text(mainframe, width=60, height=10)
+docText = Text(mainframe, width=60, height=30)
+abstractText = Text(mainframe, width=60, height=20)
 
 # scrollbar
 docScrollbar = ttk.Scrollbar(mainframe, orient=VERTICAL, command=docText.yview)
@@ -85,13 +85,13 @@ abstractText.configure(yscrollcommand=abstractScrollbar.set)
 # Label
 docLabel = ttk.Label(mainframe, text='文档内容：')
 abstractLabel = ttk.Label(mainframe, text='自动文摘：')
-percentLabel = ttk.Label(mainframe, text='压缩率：')
+percentLabel = ttk.Label(mainframe, text='压   缩   率：')
+docSCLabel = ttk.Label(mainframe, text='原文句子数：')
+abstractSCLabel = ttk.Label(mainframe, text='文摘句子数：')
 docSC = StringVar()
-docSC.set('原文句子数：')
-docSCLabel = ttk.Label(mainframe, textvariable=docSC)
+docSCShow = ttk.Label(mainframe, textvariable=docSC)
 abstractSC = StringVar()
-abstractSC.set('文摘句子数：')
-abstractSCLabel = ttk.Label(mainframe, textvariable=abstractSC)
+abstractSCShow = ttk.Label(mainframe, textvariable=abstractSC)
 
 # entry
 percent = DoubleVar()
@@ -105,20 +105,22 @@ clipButton = ttk.Button(mainframe, text='复制文摘', command=clip)
 # 布局，左边
 root.config(menu=menubar)
 mainframe.grid(column=0, row=0, sticky=(N, S, E, W))
-docLabel.grid(column=1, row=1, columnspan=2, sticky=(E, W))
+docLabel.grid(column=1, row=1, sticky=(E, W))
 docText.grid(column=1, row=2, rowspan=4, sticky=(N,W), pady=5)
 docScrollbar.grid(column=2, row=2, rowspan=4, sticky=(N,S), pady=5)
 # 右上
-percentLabel.grid(column=3, row=1)
-percentEntry.grid(column=4, row=1)
-docSCLabel.grid(column=5, row=1, columnspan=2)
-runButton.grid(column=3, row=2, columnspan=2, rowspan=2)
-abstractSCLabel.grid(column=5, row=2, columnspan=2)
-clipButton.grid(column=5, row=3, columnspan=2, sticky=N)
-
+abstractLabel.grid(column=3, row=1, columnspan=4, sticky=(W, S))
+abstractText.grid(column=3, row=2, columnspan=4, sticky=(N,W), pady=5)
+abstractScrollbar.grid(column=7, row=2, sticky=(N,S), pady=5)
 # 右下
-abstractLabel.grid(column=3, row=4, columnspan=4, sticky=(W, S))
-abstractText.grid(column=3, row=5, columnspan=3, sticky=(N,W), pady=5)
-abstractScrollbar.grid(column=6, row=5, sticky=(N,S), pady=5)
+percentLabel.grid(column=3, row=3)
+percentEntry.grid(column=4, row=3, sticky=W)
+docSCLabel.grid(column=3, row=4)
+docSCShow.grid(column=4, row=4,sticky=W)
+abstractSCLabel.grid(column=3, row=5)
+abstractSCShow.grid(column=4, row=5,sticky=W)
+runButton.grid(column=6, row=3, columnspan=2, rowspan=2)
+clipButton.grid(column=6, row=5, columnspan=2, sticky=N)
+
 
 root.mainloop()
