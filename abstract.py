@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # GUI主界面
 # 同时进行输入检查
@@ -72,8 +72,8 @@ root.option_add('*tearoff', False)
 menubar = Menu(root)
 menu_file = Menu(menubar)
 menubar.add_cascade(menu=menu_file, label='file')
-menu_file.add_command(label='Open...', command=openFile)
-menu_file.add_command(label='Exit', command=exitProgram)
+menu_file.add_command(label='Open    ctrl+o', command=openFile)
+menu_file.add_command(label='Exit    ctrl+e', command=exitProgram)
 
 # frame
 mainframe = ttk.Frame(root, padding='15 15 5 15')
@@ -145,9 +145,9 @@ clipButton.grid(column=6, row=5, sticky=(N,E))
 # 事件绑定
 docText.focus()
 root.bind('<Return>', transform)
-root.bind('<Control-c>', clip)
+# root.bind('<Control-c>', clip)
 root.bind('<Control-o>', openFile)
-root.bind('<Control-q>', exitProgram)
+root.bind('<Control-e>', exitProgram)
 root.bind('<Control-a>', selectAll)
 
 root.mainloop()
