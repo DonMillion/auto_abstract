@@ -9,7 +9,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 import getAbstract
 
-def openFile():
+def openFile(*args):
 	"""从文件读取内容"""
 	filetype = [('txt', '*.txt')] # 目前只支持txt文件
 	filename = filedialog.askopenfilename(filetypes=filetype)
@@ -30,7 +30,7 @@ def openFile():
 	docText.delete('1.0', 'end')
 	docText.insert('1.0', content)	
 
-def exitProgram():
+def exitProgram(*args):
 	"""退出程序"""
 	root.destroy()
 
@@ -61,11 +61,12 @@ def clip(*args):
 	root.clipboard_clear()
 	root.clipboard_append(text)
 
+def selectAll(*args):
+	docText.tag_add("sel", '1.0','end')
+
 root = Tk()
 root.title('自动文摘生成器')
 root.option_add('*tearoff', False)
-# root.columnconfigure(0, weight=1)
-# root.rowconfigure(0, weight=1)
 
 # 设置菜单
 menubar = Menu(root)
@@ -76,9 +77,6 @@ menu_file.add_command(label='Exit', command=exitProgram)
 
 # frame
 mainframe = ttk.Frame(root, padding='15 15 5 15')
-print(mainframe['style'])
-# mainframe.columnconfigure(1, weight=1)
-# mainframe.rowconfigure(2, weight=1)
 
 # 显示文档的text widget
 docText = Text(mainframe, width=60, height=30)
@@ -93,10 +91,12 @@ abstractText.configure(yscrollcommand=abstractScrollbar.set)
 # 设置字体
 topLabelFont = font.Font(family='微软雅黑', size=10)
 showLabelFont = font.Font(family='微软雅黑', size=10)
-# buttonFont = font.Font(family='微软雅黑', size=12)
 s=ttk.Style()
 s.configure('TButton', font='微软雅黑 11 bold')
+s.configure('TText', font='微软雅黑 14')
 s.configure('TButton', foreground='#6b93b5')
+
+# 设置背景颜色
 styleArray = ('TButton', 'TFrame', 'TLabel', 'TEntry')
 for style in styleArray:
 	s.configure(style, background='#ebf0f6')
@@ -142,5 +142,12 @@ abstractSCShow.grid(column=4, row=5,sticky=W)
 runButton.grid(column=6, row=3, rowspan=2, sticky=E)
 clipButton.grid(column=6, row=5, sticky=(N,E))
 
+# 事件绑定
+docText.focus()
+root.bind('<Return>', transform)
+root.bind('<Control-c>', clip)
+root.bind('<Control-o>', openFile)
+root.bind('<Control-q>', exitProgram)
+root.bind('<Control-a>', selectAll)
 
 root.mainloop()

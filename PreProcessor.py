@@ -50,6 +50,19 @@ class sentence:
 	def __repr__(self):
 		return 'sentence({})'.format(self.source)
 
+# def splitSentence(symbol, sents):
+# 	"""以symbol作为分界符号把个个句子分开"""
+# 	regx = '[^'+symbol+'“]+(?:'+symbol+'|“.*?”)'
+# 	result = []
+# 	for sent in sents:
+# 		subsent = re.findall(regx, sent)
+# 		print(subsent)
+# 		if subsent:
+# 			result.extend(subsent)
+# 		else:
+# 			result.append(sent) # 如果没有相应的符号就会为空，需要把原来的句子补上去
+# 	return result
+
 def process(document):
 	"""预处理文档，同时去除停用词"""
 	#设置分段标识符号，句号、问号等
@@ -58,6 +71,15 @@ def process(document):
 	fullDocLen = len(document)
 	delimiters = r'[;!?。？！；～\s]\s*'
 	sent = re.split(delimiters, document)
+	
+	# 断句，按。？！；~五个符号分句，五次循环
+	# 先从"。"开始
+	# sent = re.findall(r'[^。“]+(?:。|“.*?”)', document)
+	# # "？"
+	# sent = splitSentence('？', sent)
+	# sent = splitSentence('！', sent)
+	# print(sent)
+
 	result = []
 	index = 0
 	for s in sent:
