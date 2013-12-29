@@ -149,5 +149,6 @@ root.bind('<Return>', transform)
 root.bind('<Control-o>', openFile)
 root.bind('<Control-e>', exitProgram)
 root.bind('<Control-a>', selectAll)
-
+mainframe.pack()
+root.resizable(False,False)
 root.mainloop()
