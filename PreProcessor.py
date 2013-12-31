@@ -8,13 +8,13 @@ from ResultAnalyzer import Analyzer
 
 stopwordFileLoc = 'stopwords.txt'
 SC = 0 #所有句子的总数(Sentence Count)
-fullDoc = ''
-fullDocLen = 0
-sentences = []
+fullDoc = '' # 整个完整的原文
+fullDocLen = 0 # 原文句子数量
+sentences = [] 
 
 def loadStopwords():
 	"""加载停用词表"""
-	stopwordFile = open(stopwordFileLoc, mode='r', encoding='utf8')
+	stopwordFile = open(stopwordFileLoc, mode='r', encoding='utf8') # 打开停用词字典
 	stopwords = {} #遍历字典时速度会快点
 	for word in stopwordFile.read().split('\n'):
 		stopwords[word] = None
@@ -69,7 +69,9 @@ def process(document):
 	global fullDoc, fullDocLen
 	fullDoc = document
 	fullDocLen = len(document)
+
 	delimiters = r'[;!?。？！；～\s]\s*'
+	# 分句
 	sent = re.split(delimiters, document)
 	
 	# 断句，按。？！；~五个符号分句，五次循环
@@ -82,6 +84,8 @@ def process(document):
 
 	result = []
 	index = 0
+
+	# 对每个句子进行处理
 	for s in sent:
 		item = sentence(s)
 		if item.wordcount > 0:

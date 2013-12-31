@@ -5,7 +5,22 @@ from operator import attrgetter
 
 def init():
 	"""初始化，清理各个模块中的问题全局变量"""
+	# 预处理模块
+	PreProcessor.SC = 0
+	PreProcessor.fullDoc = ''
+	PreProcessor.fullDocLen = 0
+	PreProcessor.sentences = []
+
+	# 子主题
+	SubTopic.nodeRoot = []
 	SubTopic.SimSum = 0
+	SubTopic.topicList = []
+	SubTopic.SimMat = []
+
+	# 权重构造模块
+	WeightBuilder.firSent = []
+
+	# 文摘抽取模块
 
 def setPercent(percent):
 	"""设置压缩率"""
